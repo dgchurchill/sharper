@@ -284,28 +284,8 @@ then returns the description to show in the main transient."
                   font-lock-doc-face))))
 
 (defun sharper--current-method-function-name ()
-  "Return the name of the current method/function.
-As last resort it uses the word at point.
-The current implementation is C# only, we need to make accomodations for F#."
-  ;; c-defun-name-and-limits is an undocumentd cc-mode function.
-  ;; It works, but, who knows?
-  ;; In case if fails, we resort to the word at point, however
-  ;; 'word is not valid when subword-mode is enabled, using
-  ;; instead 'sexp makes it work in both cases
-  (let ((c-name (ignore-errors
-                  (when (fboundp 'c-defun-name-and-limits)
-                    (c-defun-name-and-limits nil))))
-        (fallback (thing-at-point 'sexp t)))
-    (if c-name
-        (car c-name) ;; nothing else to do!
-      (if (> (length fallback) 125) ;; make sure the fallback is not too long
-          ;; See issue #24. Before we would take only 50 chars and add "(...)" but
-          ;; that broke the --filter parameter. I only added this because one time I
-          ;; had a giant block of text under point and it made the transient look
-          ;; horrible. Using a 125 char limit is realistic, and not adding ellipsis
-          ;; will keep --filter working.
-          (substring fallback 0 125)
-        fallback))))
+  "Return the name of the current method/function."
+  (which-function))
 
 (defun sharper--nearest-project-dir ()
   "Return the first directory that has a project from the current path."
